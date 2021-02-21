@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GenderlyApplication {
+class GenderlyApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(GenderlyApplication.class, args);

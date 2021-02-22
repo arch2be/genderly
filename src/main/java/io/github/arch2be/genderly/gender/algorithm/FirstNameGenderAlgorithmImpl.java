@@ -22,14 +22,14 @@ class FirstNameGenderAlgorithmImpl implements GenderAlgorithm {
                 .orElseThrow(() -> new GenderTokenNotFound(name));
     }
 
+    @Override
+    public GenderAlgorithmVariant getGenderAlgorithmVariant() {
+        return GenderAlgorithmVariant.FIRST;
+    }
+
     private String findFirstToken(String name) {
         return Objects.nonNull(name) && !name.trim().isEmpty()
                 ? name.trim().split(TOKEN_SEPARATOR)[0]
                 : null;
-    }
-
-    @Override
-    public GenderAlgorithmVariant getGenderAlgorithmVariant() {
-        return GenderAlgorithmVariant.FIRST;
     }
 }

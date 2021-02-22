@@ -1,6 +1,6 @@
 package io.github.arch2be.genderly.gender;
 
-enum GenderType {
+public enum GenderType {
     FEMALE,
-    MALE
+    MALE;
 }

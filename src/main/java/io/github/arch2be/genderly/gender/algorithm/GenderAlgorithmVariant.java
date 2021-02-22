@@ -1,8 +1,10 @@
-package io.github.arch2be.genderly.gender;
+package io.github.arch2be.genderly.gender.algorithm;
+
+import io.github.arch2be.genderly.gender.exceptions.GenderAlgorithmVariantNotFound;
 
 import java.util.Arrays;
 
-enum GenderAlgorithmVariant {
+public enum GenderAlgorithmVariant {
     FIRST("FIRST", "Only first provided token to check"),
     ALL("ALL", "All provided tokens to check");
 

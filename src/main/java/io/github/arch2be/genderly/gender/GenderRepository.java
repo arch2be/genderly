@@ -1,6 +1,7 @@
 package io.github.arch2be.genderly.gender;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 import java.util.Optional;
 

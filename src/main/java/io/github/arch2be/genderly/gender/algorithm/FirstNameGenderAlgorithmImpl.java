@@ -10,7 +10,6 @@ import java.util.Objects;
 class FirstNameGenderAlgorithmImpl implements GenderAlgorithm {
 
     private final GenderRepository genderRepository;
-    private final String TOKEN_SEPARATOR = " ";
 
     public FirstNameGenderAlgorithmImpl(GenderRepository genderRepository) {
         this.genderRepository = genderRepository;

@@ -5,7 +5,9 @@ import io.github.arch2be.genderly.gender.GenderToken;
 import io.github.arch2be.genderly.gender.GenderType;
 import io.github.arch2be.genderly.gender.exceptions.GenderTokenNotFound;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
+
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -19,26 +21,36 @@ class AllNameGenderAlgorithmImpl implements GenderAlgorithm {
 
     @Override
     public GenderAlgorithmResponse guessGender(String name) throws GenderTokenNotFound {
-        Objects.requireNonNull(name);
+        Map<GenderType, Long> groupedGenderTokens = groupByGenderTokensWithCountingOccurrence(genderRepository.findByNameIn(mapStringToTokenArray(name)));
+        List<Map.Entry<GenderType, Long>> reduceGenderTokensWithOccurrenceForMaxValues = reduceGenderTokensWithOccurrenceForMaxValues(groupedGenderTokens);
 
-        String[] names = name.split(" ");
-
-        Map<GenderType, Long> groupedGenderTokens = genderRepository.findByNameIn(Arrays.asList(names.clone()))
-                .stream()
-                .collect(groupingBy(GenderToken::getGenderType, counting()));
-
-        List<Map.Entry<GenderType, Long>> value = groupedGenderTokens.entrySet().stream()
-                .collect(groupingBy(Map.Entry::getValue, TreeMap::new, toList()))
-                .lastEntry()
-                .getValue();
-
-        return value.size() > 1
+        return reduceGenderTokensWithOccurrenceForMaxValues.size() != 1
                 ? GenderAlgorithmResponse.INCONCLUSIVE
-                : GenderAlgorithmResponse.fromGenderType(value.get(0).getKey());
+                : GenderAlgorithmResponse.fromGenderType(reduceGenderTokensWithOccurrenceForMaxValues.get(0).getKey());
     }
 
     @Override
     public GenderAlgorithmVariant getGenderAlgorithmVariant() {
         return GenderAlgorithmVariant.ALL;
+    }
+
+    private List<Map.Entry<GenderType, Long>> reduceGenderTokensWithOccurrenceForMaxValues(Map<GenderType, Long> groupedGenderTokens) {
+        return Objects.nonNull(groupedGenderTokens) && groupedGenderTokens.size() > 0
+                ? groupedGenderTokens.entrySet().stream()
+                        .collect(groupingBy(Map.Entry::getValue, TreeMap::new, toList()))
+                        .lastEntry()
+                        .getValue()
+                : Collections.emptyList();
+    }
+
+    private Map<GenderType, Long> groupByGenderTokensWithCountingOccurrence(List<GenderToken> genderTokens) {
+        return genderTokens.stream()
+                .collect(groupingBy(GenderToken::getGenderType, counting()));
+    }
+
+    private List<String> mapStringToTokenArray(String name) {
+        return Objects.nonNull(name) && !name.trim().isEmpty()
+                ? Arrays.asList(name.trim().split(TOKEN_SEPARATOR))
+                : Collections.emptyList();
     }
 }

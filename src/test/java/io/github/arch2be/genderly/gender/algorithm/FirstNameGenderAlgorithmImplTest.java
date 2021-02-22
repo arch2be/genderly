@@ -7,7 +7,11 @@ import io.github.arch2be.genderly.gender.exceptions.GenderTokenNotFound;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -21,29 +25,18 @@ class FirstNameGenderAlgorithmImplTest {
         genderMockRepository = Mockito.mock(GenderRepository.class);
         genderAlgorithm = new FirstNameGenderAlgorithmImpl(genderMockRepository);
 
-        Mockito
-                .when(genderMockRepository.findByName("Monika"))
-                .thenReturn(Optional.of(new GenderToken("Monika", GenderType.FEMALE)));
+        Map<String, Optional<GenderToken>> repositoryMockedRules = new HashMap<>();
 
-        Mockito
-                .when(genderMockRepository.findByName("Karol"))
-                .thenReturn(Optional.of(new GenderToken("Karol", GenderType.MALE)));
+        repositoryMockedRules.put("Monika", Optional.of(new GenderToken("Monika", GenderType.FEMALE)));
+        repositoryMockedRules.put("Karol", Optional.of(new GenderToken("Karol", GenderType.MALE)));
+        repositoryMockedRules.put("Adam", Optional.empty());
+        repositoryMockedRules.put(" ", Optional.empty());
+        repositoryMockedRules.put("" , Optional.empty());
+        repositoryMockedRules.put(null, Optional.empty());
 
-        Mockito
-                .when(genderMockRepository.findByName("Adam"))
-                .thenReturn(Optional.empty());
-
-        Mockito
-                .when(genderMockRepository.findByName(""))
-                .thenReturn(Optional.empty());
-
-        Mockito
-                .when(genderMockRepository.findByName(" "))
-                .thenReturn(Optional.empty());
-
-        Mockito
-                .when(genderMockRepository.findByName(null))
-                .thenReturn(Optional.empty());
+        repositoryMockedRules.forEach((k, v) -> Mockito
+                .when(genderMockRepository.findByName(k))
+                .thenReturn(v));
     }
 
     @Test

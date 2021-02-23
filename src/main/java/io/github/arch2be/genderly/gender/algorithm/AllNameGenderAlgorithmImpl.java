@@ -4,13 +4,11 @@ import io.github.arch2be.genderly.gender.GenderRepository;
 import io.github.arch2be.genderly.gender.GenderToken;
 import io.github.arch2be.genderly.gender.GenderType;
 import io.github.arch2be.genderly.gender.exceptions.GenderTokenNotFound;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 import static java.util.stream.Collectors.*;
 
-@Service
 class AllNameGenderAlgorithmImpl implements GenderAlgorithm {
 
     private final GenderRepository genderRepository;

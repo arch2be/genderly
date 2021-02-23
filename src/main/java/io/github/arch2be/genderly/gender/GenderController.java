@@ -7,9 +7,10 @@ import io.github.arch2be.genderly.gender.exceptions.GenderAlgorithmVariantNotFou
 import io.github.arch2be.genderly.gender.exceptions.GenderTokenNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,8 +30,9 @@ class GenderController {
     }
 
     @GetMapping(path = "/names")
-    private List<String> getAllAvailableNamesGroupedByGenders() {
-        return new ArrayList<>();
+    private List<GenderTokenDto> getAllAvailableNamesGroupedByGenders(@RequestParam Integer pageSize,
+                                                              @RequestParam Integer pageNumber) {
+        return genderService.getPageOfEachAvailableNames(pageSize, pageNumber);
     }
 
     @ExceptionHandler({GenderAlgorithmNotImplemented.class})
@@ -41,5 +43,10 @@ class GenderController {
     @ExceptionHandler({GenderAlgorithmVariantNotFound.class, GenderTokenNotFound.class})
     private ResponseEntity<String> handleNotFoundExceptions(RuntimeException runtimeException) {
         return new ResponseEntity<>(runtimeException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    private ResponseEntity<String> handleMissingServletRequestParameterExceptionForRequiredRequestParams(ServletRequestBindingException requestBindingException) {
+        return new ResponseEntity<>(requestBindingException.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

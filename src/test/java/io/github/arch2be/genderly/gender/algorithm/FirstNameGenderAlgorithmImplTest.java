@@ -1,42 +1,26 @@
 package io.github.arch2be.genderly.gender.algorithm;
 
 import io.github.arch2be.genderly.gender.GenderRepository;
-import io.github.arch2be.genderly.gender.GenderToken;
-import io.github.arch2be.genderly.gender.GenderType;
 import io.github.arch2be.genderly.gender.exceptions.GenderTokenNotFound;
+import io.github.arch2be.genderly.gender.mocked_db_rules.FirstNameAlgorithmMockedDbRules;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FirstNameGenderAlgorithmImplTest {
+class FirstNameGenderAlgorithmImplTest implements FirstNameAlgorithmMockedDbRules {
 
-    private GenderRepository genderMockRepository;
     private GenderAlgorithm genderAlgorithm;
 
     @BeforeEach
     void setUp() {
-        genderMockRepository = Mockito.mock(GenderRepository.class);
+        GenderRepository genderMockRepository = Mockito.mock(GenderRepository.class);
+
+        getMockedDbRulesForFirstNameAlgorithm(genderMockRepository);
+
         genderAlgorithm = new FirstNameGenderAlgorithmImpl(genderMockRepository);
-
-        Map<String, Optional<GenderToken>> repositoryMockedRules = new HashMap<>();
-
-        repositoryMockedRules.put("Monika", Optional.of(new GenderToken("Monika", GenderType.FEMALE)));
-        repositoryMockedRules.put("Karol", Optional.of(new GenderToken("Karol", GenderType.MALE)));
-        repositoryMockedRules.put("Adam", Optional.empty());
-        repositoryMockedRules.put(" ", Optional.empty());
-        repositoryMockedRules.put("" , Optional.empty());
-        repositoryMockedRules.put(null, Optional.empty());
-
-        repositoryMockedRules.forEach((k, v) -> Mockito
-                .when(genderMockRepository.findByName(k))
-                .thenReturn(v));
     }
 
     @Test

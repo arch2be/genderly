@@ -32,6 +32,10 @@ public class GenderToken {
         return genderType;
     }
 
+    GenderTokenDto toDto() {
+        return new GenderTokenDto(name, genderType);
+    }
+
     @Override
     public String toString() {
         return "GenderToken{" +

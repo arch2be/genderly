@@ -2,11 +2,9 @@ package io.github.arch2be.genderly.gender.algorithm;
 
 import io.github.arch2be.genderly.gender.GenderRepository;
 import io.github.arch2be.genderly.gender.exceptions.GenderTokenNotFound;
-import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-@Service
 class FirstNameGenderAlgorithmImpl implements GenderAlgorithm {
 
     private final GenderRepository genderRepository;

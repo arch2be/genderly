@@ -1,42 +1,54 @@
 package io.github.arch2be.genderly.gender;
 
-import io.github.arch2be.genderly.gender.algorithm.GenderAlgorithm;
+import io.github.arch2be.genderly.gender.algorithm.GenderAlgorithmFactory;
 import io.github.arch2be.genderly.gender.algorithm.GenderAlgorithmResponse;
 import io.github.arch2be.genderly.gender.algorithm.GenderAlgorithmVariant;
-import io.github.arch2be.genderly.gender.exceptions.GenderAlgorithmNotImplemented;
 import io.github.arch2be.genderly.gender.exceptions.GenderAlgorithmVariantNotFound;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 class GenderService {
 
-    private final List<GenderAlgorithm> genderAlgorithms;
+    private final GenderAlgorithmFactory genderAlgorithmFactory;
+    private final GenderRepository genderRepository;
 
-    GenderService(List<GenderAlgorithm> genderAlgorithms) {
-        this.genderAlgorithms = genderAlgorithms;
+    GenderService(GenderAlgorithmFactory genderAlgorithmFactory, GenderRepository genderRepository) {
+        this.genderAlgorithmFactory = genderAlgorithmFactory;
+        this.genderRepository = genderRepository;
     }
 
-    public GenderAlgorithmResponse guessGender(GenderAlgorithmVariant genderAlgorithmVariant,
+    GenderAlgorithmResponse guessGender(GenderAlgorithmVariant genderAlgorithmVariant,
                                                String namesToCheck) {
 
-        throwExceptionForWrongWrongGenderAlgorithmVariantValue(genderAlgorithmVariant);
+        throwExceptionForWrongGenderAlgorithmVariantValue(genderAlgorithmVariant);
 
-        return getGenderAlgorithmByAlgorithmVariant(genderAlgorithmVariant)
+        return genderAlgorithmFactory.getGenderAlgorithm(genderAlgorithmVariant)
                 .guessGender(namesToCheck);
     }
 
-    private void throwExceptionForWrongWrongGenderAlgorithmVariantValue(GenderAlgorithmVariant genderAlgorithmVariant) {
-        if (Objects.isNull(genderAlgorithmVariant))
-            throw new GenderAlgorithmVariantNotFound(null);
+    List<GenderTokenDto> getPageOfEachAvailableNames(Integer pageSize, Integer pageNumber) {
+
+        if (Objects.isNull(pageSize) || Objects.isNull(pageNumber)) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.stream(GenderType.values())
+                .map(genderType -> genderRepository.findAllByGenderType(genderType, PageRequest.of(pageNumber, pageSize)))
+                .map(genderTokens -> genderTokens.stream()
+                        .map(GenderToken::toDto)
+                        .collect(toList()))
+                .flatMap(Collection::stream)
+                .collect(toList());
     }
 
-    private GenderAlgorithm getGenderAlgorithmByAlgorithmVariant(GenderAlgorithmVariant genderAlgorithmVariant) {
-        return genderAlgorithms.stream()
-                .filter(genderAlgorithm -> genderAlgorithm.getGenderAlgorithmVariant().equals(genderAlgorithmVariant))
-                .findFirst()
-                .orElseThrow(() -> new GenderAlgorithmNotImplemented(genderAlgorithmVariant));
+    private void throwExceptionForWrongGenderAlgorithmVariantValue(GenderAlgorithmVariant genderAlgorithmVariant) {
+        if (Objects.isNull(genderAlgorithmVariant))
+            throw new GenderAlgorithmVariantNotFound(null);
     }
 }

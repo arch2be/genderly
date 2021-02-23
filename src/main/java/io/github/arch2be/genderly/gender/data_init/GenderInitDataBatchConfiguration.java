@@ -24,7 +24,7 @@ class GenderInitDataBatchConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
     private final GenderRepository genderRepository;
 
-    public GenderInitDataBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, GenderRepository genderRepository) {
+    GenderInitDataBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, GenderRepository genderRepository) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.genderRepository = genderRepository;
